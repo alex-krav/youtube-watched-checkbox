@@ -1,34 +1,40 @@
 {
   "name": "YouTube watched checkbox",
-  "version": "1.0",
+  "version": "1.0.0",
   "manifest_version": 3,
-  "description": "Manually select YouTube watched videos. Saved in cloud.",
+  "description": "Manually select YouTube watched videos.",
 
   "icons": {
     "16": "images/icon16.png",
+    "32": "images/icon32.png",
     "48": "images/icon48.png",
     "128": "images/icon128.png"
   },
   "permissions": [
-    "activeTab",
-    "storage",
-    "https://youtube-watched-checkbox.heroku.com"
+    "storage", "activeTab", "scripting"
   ],
 
   "action": {
     "default_title": "YouTube watched checkbox",
-    "default_popup": "popup.html"
-    },
+    "default_popup": "templates/popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "32": "images/icon32.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
   "background": {
     "service_worker": "background.js"
   },
-  "content_scripts": [
+  "options_page": "templates/options.html",
+  "content_scripts":
+  [
     {
-      "matches": ["https://*.youtube.com/*"],
-      "run_at": "document_idle",
-      "css": ["styles.css"],
-      "js": ["content.js"]
+      "matches":["https://*.youtube.com/*"],
+      "js":["scripts/jquery-3.6.0.min.js", "scripts/content.js"],
+      "css": ["styles/styles.css"],
+      "run_at": "document_end"
     }
-  ],
-  "options_page": "options.html"
+  ]
 }
