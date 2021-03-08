@@ -8,29 +8,62 @@ jQuery("p#youtube-watched-checkbox").click(function() {
     var v = url.searchParams.get("v");
 
     // get all IDs from storage
-    var array = [];
-    chrome.storage.local.get({ids: []}, function(items) {
+    chrome.storage.local.get({done3: {}}, function(items) {
         // if (!chrome.runtime.error) {
-            array = items.ids;
-            console.log("loaded from storage: " + array.join(',') );
+            let holder = objectify(items.done3);
+            console.log("loaded from storage: " + JSON.stringify(items.done3));
+            console.log(holder.videos_ids);
 
-            if (includes(array, v)) {
-                // found:
-                console.log(v + " in " + array.join(","));
+            if (check(holder,v) === "deleted") {
                 p.css('color','blue');
-                removeItemOnce(array,v);
             } else {
-                // not found:
-                console.log(v + " NOT in " + array.join(","));
                 p.css('color','red');
-                array.push(v);
             }
-            chrome.storage.local.set({ids: array}, function()
-                {console.log('saved to storage : ' + array.join(','));
-            });
+            save(holder);
     });
 });
 
+function Holder() {
+    this.videos_ids = new Set();
+    this.last_updated = new Date(0);
+}
+
+function check(holder, id){
+    if (holder.videos_ids.has(id)) {
+        holder.videos_ids.delete(id);
+        return "deleted";
+    } else {
+        holder.videos_ids.add(id);
+        return "added";
+    }
+}
+
+function jsonify(holder) {
+    let holder_json = {};
+    holder_json.last_updated = holder.last_updated.getTime();
+    holder_json.videos_ids = [...holder.videos_ids];
+    return holder_json;
+}
+
+function objectify(holder_json) {
+    let holder = {};
+    holder.last_updated = new Date(holder_json.last_updated);
+    holder.videos_ids = new Set(holder_json.videos_ids);
+    return holder;
+}
+
+function save(holder){
+    holder.last_updated = new Date(Date.now());
+    let holder_json = jsonify(holder);
+    chrome.storage.local.set({done3: holder_json}, function() {
+        console.log('saved to storage : ' + JSON.stringify(holder_json));
+        console.log(holder.videos_ids);
+    });
+}
+
+function compare(holder, timestamp_utc) {
+    return holder.last_updated.getTime() > timestamp_utc;
+}
 
 function update(array, item)
 {
