@@ -1,5 +1,61 @@
-jQuery("div#content").after("<p id='youtube-watched-checkbox' style='color:blue;'>WATCHED</p>");
+"use strict";
 
+// find all thumbnails
+let thumbnails = document.querySelectorAll("ytd-thumbnail");
+for (let thumbnail of thumbnails) {
+
+    // add checkbox - TODO
+    // get videoId - regex/disable_scripting
+    let href = thumbnail.querySelector("a[id='thumbnail']");
+    let url = new URL(window.location + href);
+    let videoId = url.searchParams.get("v");
+
+    console.log('videoId: ' + videoId);
+    if (videoId) {
+        thumbnail.videoId = videoId;
+        thumbnail.done = false;
+
+        // search for thumbnail videoId in storage
+        chrome.storage.local.get(videoId, function(result) {
+            if (result[videoId]) {
+                console.log('videoId = ' + videoId + ', result = ' + JSON.stringify(result));
+                // if found - blur, add note: "watched"
+                thumbnail.style.opacity = 0.5;
+                thumbnail.done = true;
+            }
+        });
+
+        // add event listener on video hover
+        thumbnail.addEventListener('mouseenter', {
+            handleEvent(event) {
+                let target = event.currentTarget;
+                let videoId = target.videoId;
+
+                if (!target.done) {
+                    target.done = true;
+                    let obj = {}; obj[videoId] = 1;
+                    chrome.storage.local.set(obj, function() {
+                        console.log('Write ' + obj);
+                    });
+                    target.style.opacity = 0.5;
+                } else {
+                    target.done = false;
+                    chrome.storage.local.remove(videoId, function() {
+                        console.log('Delete ' + videoId);
+                    })
+                    target.style.opacity = 1;
+                }
+            }
+        });
+    }
+}
+
+
+/* jQuery("div#content").after("<p id='youtube-watched-checkbox' style='color:blue;'>WATCHED</p>");
+
+let divsIdContent = document.querySelectorAll("div#content"); // not live collection!
+
+let paragraphsIdDone = document.querySelectorAll("p#youtube-watched-checkbox"); // not live collection!
 jQuery("p#youtube-watched-checkbox").click(function() {
     // get link ID
     var p = jQuery(this);
@@ -21,7 +77,7 @@ jQuery("p#youtube-watched-checkbox").click(function() {
             }
             save(holder);
     });
-});
+});*/
 
 function Holder() {
     this.videos_ids = new Set();
