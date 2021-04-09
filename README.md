@@ -1,33 +1,25 @@
-### ver 1.0
-- mark videos, not playlists
-- local storage
+# YouTube Watched Checkbox
+Google Chrome extension for manual selection of YouTube watched videos.
 
-### TODO
-* popup script:
-    * mark playlist as watched?
+## What for?
+YouTube marks watched videos with red progress line, thus showing you videos, you've already watched.
 
-  
-* content script: 
-    * DOM loaded (page load, search)
-        * get videoIDs from page -> compare to videoIDs from storage -> blur watched
-        * get playlists from page -> get videoIDs -> compare -> blur playlist
-    * checkbox marked
-        * video: blur + add videoID to storage
-        * playlist: blur + add playlist videoIDs to storage
-  
+There are Chrome Extensions available, that add 'Watched' label and darken thumbnails depending on how much of video you already watched.
 
-* local storage
-    * video IDs [selected + from DB]
+However, there are cases, that are not covered with above functionality:
+- you've seen this video elsewhere (another device, account, or offline)
+- you are familiar with information (lecture on something you already know)
+- you watched a part of video and decided that it's enough
 
+Marked videos won't scatter your attention when searching for something or browsing channel or playlist videos.
 
-* background script:
-    * onload
-        * get watched videos from DB -> load to storage
-    * onclose
-    * every 5 mins
-        * save storage to DB 
-  
+## Main functionality
+- Installing extension via Chrome Web Store
+- Marking videos as 'Done' or unmarking them back
+- Data is saved in Chrome Storage
 
-* heroku
-    * user ID <-> video IDs
-
+## Supported pages
+- YouTube homepage
+- Channel / User videos
+- Playlist
+- Video 
