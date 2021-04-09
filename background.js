@@ -18,4 +18,4 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 	}
 	prevUrl = currentUrl;
 
-}, {url: [{urlMatches : 'https://www.youtube.com'}]});
+}, {url: [{urlMatches : 'https://www.youtube.com/'}]});

@@ -3,7 +3,7 @@
 const thumbnailPath = "ytd-thumbnail a[id='thumbnail']";
 
 // page updated (user clicked on video etc)
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message) => {
     console.log("path updated: " + message.url);
     processUrl(message.url);
 });
@@ -38,7 +38,7 @@ function processUrl(url) {
         containerItem = ["ytd-item-section-renderer", "ytd-video-renderer"];
 
     }
-    else if (path.match(/^\/user\/[^\/]*|^\/c\/[^\/]*\/featured$/)) {
+    else if (path.match(/^\/user\/[^/]*|^\/c\/[^/]*\/featured$/)) {
         // fixme: only first 3 playlists work
         console.log("MATCHED USER HOME"); //todo: observer for loading of new playlists
         elementsPath = ["yt-horizontal-list-renderer ytd-grid-video-renderer"];
@@ -46,15 +46,15 @@ function processUrl(url) {
         containerId = [-1];
         containerItem = ["ytd-grid-video-renderer"];
     }
-    else if (path.match(/^\/c\/[^\/]*\/[^f]/)) {
-        if (path.match(/^\/c\/[^\/]*\/videos$/)) {
+    else if (path.match(/^\/c\/[^/]*\/[^f]/)) {
+        if (path.match(/^\/c\/[^/]*\/videos$/)) {
             console.log("MATCHED USER VIDEOS");
             elementsPath = ["ytd-grid-renderer ytd-grid-video-renderer"];
             containersPath = ["ytd-grid-renderer #items"];
             containerId = [0];
             containerItem = ["ytd-grid-video-renderer"];
         }
-        else if (path.match(/^\/c\/[^\/]*\/search/)) {
+        else if (path.match(/^\/c\/[^/]*\/search/)) {
             // fixme first: only first 3 videos work
             // fixme navigation: new videos after scroll don't work
             console.log("MATCHED USER SEARCH");
@@ -66,21 +66,21 @@ function processUrl(url) {
     }
     else if (path.match(/^\/channel\//)) {
         // channel
-        if (path.match(/^\/channel\/[^\/]*$|^\/channel\/[^\/]*\/featured/)) {
+        if (path.match(/^\/channel\/[^/]*$|^\/channel\/[^/]*\/featured/)) {
             console.log("MATCHED CHANNEL HOME"); //todo: observer for loading of new playlists
             elementsPath = ["yt-horizontal-list-renderer ytd-grid-video-renderer"];
             containersPath = ["yt-horizontal-list-renderer #items"];
             containerId = [-1];
             containerItem = ["ytd-grid-video-renderer"];
         }
-        else if (path.match(/^\/channel\/[^\/]*\/videos$/)) {
+        else if (path.match(/^\/channel\/[^/]*\/videos$/)) {
             console.log("MATCHED CHANNEL VIDEOS");
             elementsPath = ["ytd-grid-renderer ytd-grid-video-renderer"];
             containersPath = ["ytd-grid-renderer #items"];
             containerId = [0];
             containerItem = ["ytd-grid-video-renderer"];
         }
-        else if (path.match(/^\/channel\/[^\/]*\/search/)) {
+        else if (path.match(/^\/channel\/[^/]*\/search/)) {
             //fixme: on first load - processed first 3 videos
             //fixme: didn't work on webNavigation.HistoryUpdated
             console.log("MATCHED CHANNEL SEARCH");
@@ -158,7 +158,7 @@ function processUrl(url) {
             if (elements.length) {
                 setListeners(elementsPath, containersPath, containerId, containerItem);
             }
-        }, 10_000);
+        }, 10000);
     } else {
         setListeners(elementsPath, containersPath, containerId, containerItem);
     }
@@ -186,7 +186,7 @@ function setListeners(elements, containers, containerIds, containerItems) {
                         observer.observe(container, {childList: true});
                     }
                 } catch(err) {
-                    debugger;
+                    console.log(err);
                 }
             } else {
                 let containers = document.querySelectorAll(containerPath);
@@ -197,7 +197,7 @@ function setListeners(elements, containers, containerIds, containerItems) {
                                 observer.observe(container, {childList: true});
                             }
                         } catch(err) {
-                            debugger;
+                            console.log(err);
                         }
                     }
                 }
