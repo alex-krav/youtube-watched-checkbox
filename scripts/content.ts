@@ -1,9 +1,22 @@
 'use strict';
 
+interface Message {
+  url: string;
+}
+
+interface Thumbnail extends HTMLElement {
+  videoId?: string;
+  done?: boolean;
+}
+
+interface Holder {
+  [key: string]: number
+}
+
 const thumbnailPath = 'ytd-thumbnail a[id=\'thumbnail\']';
 
 // page updated (user clicked on video etc)
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener((message: Message) => {
   console.log('path updated: ' + message.url);
   processUrl(message.url);
 });
@@ -15,16 +28,16 @@ processUrl(window.location + '');
  * Choose selectors depending on url
  * @param {string} url
  */
-function processUrl(url) {
+function processUrl(url: string) {
   const startTime = Date.now();
   const youtubeHostRegex = /https?:\/\/(www\.)?youtube\.com/;
   const path = url.replace(youtubeHostRegex, '');
   console.log('PATH: ' + path);
 
-  let elementsPath = [];
-  let containersPath = [];
-  let containerId = [];
-  let containerItem = [];
+  let elementsPath: string[] = [];
+  let containersPath: string[] = [];
+  let containerId: number[] = [];
+  let containerItem: string[] = [];
 
   if (path.match(/^\/$/)) {
     console.log('MATCHED HOME');
@@ -163,14 +176,14 @@ function processUrl(url) {
  * @param {array} containerIds
  * @param {array} containerItems
  */
-function setListeners(elements, containers, containerIds, containerItems) {
+function setListeners(elements: string[], containers: string[], containerIds: number[], containerItems: string[]) {
   for (let i = 0; i < elements.length; i++) {
     const elementPath = elements[i] + ' ' + thumbnailPath;
     console.log('elementPath: ' + elementPath);
     const containerPath = containers[i];
     console.log('containerPath: ' + containerPath);
 
-    const thumbnailElements = document.querySelectorAll(elementPath);
+    const thumbnailElements: NodeListOf<HTMLElement> = document.querySelectorAll(elementPath);
 
     if (thumbnailElements && thumbnailElements.length) {
       for (const thumbnail of thumbnailElements) {
@@ -184,7 +197,7 @@ function setListeners(elements, containers, containerIds, containerItems) {
           if (container) {
             observer.observe(container, {childList: true});
           }
-        } catch (err) {
+        } catch (err: unknown) {
           console.log(err);
         }
       } else {
@@ -195,7 +208,7 @@ function setListeners(elements, containers, containerIds, containerItems) {
               if (container) {
                 observer.observe(container, {childList: true});
               }
-            } catch (err) {
+            } catch (err: unknown) {
               console.log(err);
             }
           }
@@ -207,12 +220,12 @@ function setListeners(elements, containers, containerIds, containerItems) {
 
 /**
  * Add checkbox to thumbnail, darken if selected
- * @param {Element} thumbnail
+ * @param {Thumbnail} thumbnail
  */
-function processThumbnail(thumbnail) {
+function processThumbnail(thumbnail: Thumbnail) {
   if (thumbnail.videoId) {
     console.log('OOPS! thumb has ' + thumbnail.videoId);
-    return;
+    return; // todo: check for possible source of not processing thumbnails on some pages
   }
   const href = thumbnail.getAttribute('href');
   if (!href) return;
@@ -225,7 +238,7 @@ function processThumbnail(thumbnail) {
   thumbnail.videoId = videoId;
   thumbnail.done = false;
 
-  chrome.storage.local.get(videoId, function(result) {
+  chrome.storage.local.get(videoId, (result: Holder) => {
     if (result[videoId]) {
       console.log('Read ' + JSON.stringify(result));
       thumbnail.style.opacity = '0.5';
@@ -235,22 +248,23 @@ function processThumbnail(thumbnail) {
 
   thumbnail.addEventListener('mouseenter', {
     handleEvent(event) {
-      const target = event.currentTarget;
+      const target = event.currentTarget as Thumbnail;
       const videoId = target.videoId;
 
       if (!target.done) {
         target.done = true;
-        const obj = {}; obj[videoId] = 1;
-        chrome.storage.local.set(obj, function() {
+        const obj: Holder = {};
+        obj[videoId] = 1;
+        chrome.storage.local.set(obj, () => {
           console.log('Save ' + JSON.stringify(obj));
         });
-        target.style.opacity = 0.5;
+        target.style.opacity = '0.5';
       } else {
         target.done = false;
-        chrome.storage.local.remove(videoId, function() {
+        chrome.storage.local.remove(videoId, () => {
           console.log('Delete ' + JSON.stringify(videoId));
         });
-        target.style.opacity = 1;
+        target.style.opacity = '1';
       }
     },
   });
@@ -261,14 +275,14 @@ function processThumbnail(thumbnail) {
  * @param {MutationRecord[]} mutations
  * @param {string} element
  */
-function callback(mutations, element) {
+function callback(mutations: MutationRecord[], element: string) {
   for (const mutation of mutations) {
     for (const node of mutation.addedNodes) {
       if (!(node instanceof HTMLElement)) continue;
 
       if (node.matches(element)) {
         console.log('observer processing thumbnail...');
-        const thumbnail = node.querySelector(thumbnailPath);
+        const thumbnail: Thumbnail = node.querySelector(thumbnailPath);
         if (thumbnail) {
           processThumbnail(thumbnail);
         }
