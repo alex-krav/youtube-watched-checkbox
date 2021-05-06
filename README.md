@@ -23,3 +23,15 @@ Marked videos won't scatter your attention when searching for something or brows
 - Channel / User videos
 - Playlist
 - Video 
+
+
+## Architecture
+
+### Component diagram
+![Software components](./doc/software-components.png)
+
+### ER diagram
+![ER diagram](./doc/ER-diagram.png)
+
+### Sequence diagram of key scenarios
+![Key scenarios](./doc/key-scenarios.png)
