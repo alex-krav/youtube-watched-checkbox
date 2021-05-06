@@ -237,35 +237,68 @@ function processThumbnail(thumbnail: Thumbnail) {
 
   thumbnail.videoId = videoId;
   thumbnail.done = false;
+  const checkbox = document.createElement('div');
+  checkbox.className = 'youtube-watched-checkbox';
+  checkbox.innerHTML = 'WATCHED';
+  thumbnail.append(checkbox);
 
-  chrome.storage.local.get(videoId, (result: Holder) => {
+  chrome.storage.sync.get(videoId, (result: Holder) => {
     if (result[videoId]) {
       console.log('Read ' + JSON.stringify(result));
-      thumbnail.style.opacity = '0.5';
+      checkbox.style.zIndex = '1000';
+      thumbnail.classList.add('youtube-watched-thumbnail');
       thumbnail.done = true;
     }
   });
 
   thumbnail.addEventListener('mouseenter', {
     handleEvent(event) {
-      const target = event.currentTarget as Thumbnail;
-      const videoId = target.videoId;
+      const currentThumbnail = event.currentTarget as Thumbnail;
+      const checkbox: HTMLElement = currentThumbnail.querySelector('.youtube-watched-checkbox');
 
-      if (!target.done) {
-        target.done = true;
+      if (!currentThumbnail.done) {
+        checkbox.style.zIndex = '1000';
+      }
+    },
+  });
+
+  thumbnail.addEventListener('mouseleave', {
+    handleEvent(event) {
+      const currentThumbnail = event.currentTarget as Thumbnail;
+      const checkbox: HTMLElement = currentThumbnail.querySelector('.youtube-watched-checkbox');
+
+      if (!currentThumbnail.done) {
+        checkbox.style.zIndex = '-1000';
+      }
+    },
+  });
+
+  checkbox.addEventListener('click', {
+    handleEvent(event) {
+      event.stopPropagation();
+      event.preventDefault();
+      event.stopImmediatePropagation();
+
+      const currentCheckbox = event.currentTarget as HTMLElement;
+      const thumbnail: Thumbnail = currentCheckbox.parentElement;
+      const videoId = thumbnail.videoId;
+
+      if (!thumbnail.done) {
+        thumbnail.done = true;
         const obj: Holder = {};
         obj[videoId] = 1;
-        chrome.storage.local.set(obj, () => {
+        chrome.storage.sync.set(obj, () => {
           console.log('Save ' + JSON.stringify(obj));
         });
-        target.style.opacity = '0.5';
+        currentCheckbox.style.zIndex = '1000';
       } else {
-        target.done = false;
-        chrome.storage.local.remove(videoId, () => {
+        thumbnail.done = false;
+        chrome.storage.sync.remove(videoId, () => {
           console.log('Delete ' + JSON.stringify(videoId));
         });
-        target.style.opacity = '1';
+        currentCheckbox.style.zIndex = '-1000';
       }
+      thumbnail.classList.toggle('youtube-watched-thumbnail');
     },
   });
 }
