@@ -162,10 +162,16 @@ function processUrl(url: string) {
       elements = document.querySelectorAll(elementPath);
       if (elements.length) {
         setListeners(elementsPath, containersPath, containerId, containerItem);
+        if (path.match(/^\/watch/)) {
+          setListenerForWatchPage(url);
+        }
       }
     }, 10000);
   } else {
     setListeners(elementsPath, containersPath, containerId, containerItem);
+    if (path.match(/^\/watch/)) {
+      setListenerForWatchPage(url);
+    }
   }
 }
 
@@ -216,6 +222,84 @@ function setListeners(elements: string[], containers: string[], containerIds: nu
       }
     }
   }
+}
+
+/**
+ * Add checkbox to video player
+ * @param {string} url
+ */
+function setListenerForWatchPage(url: string) {
+  console.log('watch page URL: ' + url);
+  const videoId = new URL(url).searchParams.get('v');
+  console.log('watch page videoId: ' + videoId);
+
+  // const player: Thumbnail = document.querySelector('video');
+  const player: Thumbnail = document.querySelector('#primary #player');
+
+  player.videoId = videoId;
+  player.done = false;
+  const checkbox = document.createElement('div');
+  checkbox.className = 'youtube-watched-checkbox';
+  checkbox.innerHTML = 'WATCHED';
+  player.append(checkbox);
+
+  chrome.storage.sync.get(videoId, (result: Holder) => {
+    if (result[videoId]) {
+      console.log('Read for watch page: ' + JSON.stringify(result));
+      checkbox.style.zIndex = '1000';
+      player.done = true;
+    }
+  });
+
+  player.addEventListener('mouseenter', {
+    handleEvent(event) {
+      const currentPlayer = event.currentTarget as Thumbnail;
+      const checkbox: HTMLElement = currentPlayer.querySelector('.youtube-watched-checkbox');
+
+      if (!currentPlayer.done) {
+        checkbox.style.zIndex = '1000';
+      }
+    },
+  });
+
+  player.addEventListener('mouseleave', {
+    handleEvent(event) {
+      const currentPlayer = event.currentTarget as Thumbnail;
+      const checkbox: HTMLElement = currentPlayer.querySelector('.youtube-watched-checkbox');
+
+      if (!currentPlayer.done) {
+        checkbox.style.zIndex = '-1000';
+      }
+    },
+  });
+
+  checkbox.addEventListener('click', {
+    handleEvent(event) {
+      event.stopPropagation();
+      event.preventDefault();
+      event.stopImmediatePropagation();
+
+      const currentCheckbox = event.currentTarget as HTMLElement;
+      const player: Thumbnail = currentCheckbox.parentElement;
+      const videoId = player.videoId;
+
+      if (!player.done) {
+        player.done = true;
+        const obj: Holder = {};
+        obj[videoId] = 1;
+        chrome.storage.sync.set(obj, () => {
+          console.log('Save ' + JSON.stringify(obj));
+        });
+        currentCheckbox.style.zIndex = '1000';
+      } else {
+        player.done = false;
+        chrome.storage.sync.remove(videoId, () => {
+          console.log('Delete ' + JSON.stringify(videoId));
+        });
+        currentCheckbox.style.zIndex = '-1000';
+      }
+    },
+  });
 }
 
 /**
