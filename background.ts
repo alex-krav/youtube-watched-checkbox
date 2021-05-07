@@ -40,10 +40,21 @@ function ensureSendMessage(tabId: number, message: Message, callback: (result: c
     } else {
       const startTime = Date.now();
       setTimeout(() => {
-        console.log('background timeout: ' + (Date.now() - startTime));
-        console.log('sending url: ' + JSON.stringify(message));
-        chrome.tabs.sendMessage(tabId, message, callback);
-      }, 10000);
+        console.log('background timeout 1: ' + (Date.now() - startTime));
+        chrome.tabs.sendMessage(tabId, {ping: true}, function(response) {
+          if (response && response.pong) { // Content script ready
+            console.log('received pong');
+            console.log('sending url: ' + JSON.stringify(message));
+            chrome.tabs.sendMessage(tabId, message, callback);
+          } else {
+            setTimeout(() => { // last chance
+              console.log('background timeout 2: ' + (Date.now() - startTime));
+              console.log('sending url: ' + JSON.stringify(message));
+              chrome.tabs.sendMessage(tabId, message, callback);
+            }, 5000);
+          }
+        });
+      }, 5000);
     }
   });
 }

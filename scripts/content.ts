@@ -32,7 +32,6 @@ processUrl(window.location + '');
  * @param {string} url
  */
 function processUrl(url: string) {
-  const startTime = Date.now();
   const youtubeHostRegex = /https?:\/\/(www\.)?youtube\.com/;
   const path = url.replace(youtubeHostRegex, '');
   console.log('PATH: ' + path);
@@ -159,16 +158,26 @@ function processUrl(url: string) {
   let elements = document.querySelectorAll(elementPath);
 
   if (!elements.length) {
+    const startTime = Date.now();
     setTimeout(() => {
-      console.log('timeout: ' + (Date.now() - startTime));
+      console.log('timeout 1: ' + (Date.now() - startTime));
       elements = document.querySelectorAll(elementPath);
-      if (elements.length) {
+      if (!elements.length) {
+        setTimeout(() => {
+          console.log('timeout 2: ' + (Date.now() - startTime));
+          elements = document.querySelectorAll(elementPath);
+          setListeners(elementsPath, containersPath, containerId, containerItem);
+          if (path.match(/^\/watch/)) {
+            setListenerForWatchPage(url);
+          }
+        }, 5000);
+      } else {
         setListeners(elementsPath, containersPath, containerId, containerItem);
         if (path.match(/^\/watch/)) {
           setListenerForWatchPage(url);
         }
       }
-    }, 10000);
+    }, 5000);
   } else {
     setListeners(elementsPath, containersPath, containerId, containerItem);
     if (path.match(/^\/watch/)) {
