@@ -6,7 +6,6 @@ interface Message {
 
 interface Thumbnail extends HTMLElement {
   videoId?: string;
-  done?: boolean;
 }
 
 interface Holder {
@@ -104,7 +103,6 @@ function processUrl(url: string) {
       containerItem = ['ytd-item-section-renderer'];
     }
   } else if (path.match(/^\/watch/)) {
-    // todo: add 'Done' for video page for convenience
     // watch
     if (path.match(/^\/watch\?.*list=/)) {
       console.log('MATCHED VIDEO WITH PLAYLIST AND RELATED');
@@ -241,7 +239,6 @@ function setListenerForWatchPage(url: string) {
   const player: Thumbnail = document.querySelector('#primary #player');
 
   player.videoId = videoId;
-  player.done = false;
   const checkbox = document.createElement('div');
   checkbox.className = 'youtube-watched-checkbox';
   checkbox.innerHTML = 'WATCHED';
@@ -251,7 +248,6 @@ function setListenerForWatchPage(url: string) {
     if (result[videoId]) {
       console.log('Read for watch page: ' + JSON.stringify(result));
       checkbox.style.zIndex = '1000';
-      player.done = true;
     }
   });
 
@@ -260,9 +256,11 @@ function setListenerForWatchPage(url: string) {
       const currentPlayer = event.currentTarget as Thumbnail;
       const checkbox: HTMLElement = currentPlayer.querySelector('.youtube-watched-checkbox');
 
-      if (!currentPlayer.done) {
-        checkbox.style.zIndex = '1000';
-      }
+      chrome.storage.sync.get(currentPlayer.videoId, (result: Holder) => {
+        if (!result[currentPlayer.videoId]) {
+          checkbox.style.zIndex = '1000';
+        }
+      });
     },
   });
 
@@ -271,9 +269,11 @@ function setListenerForWatchPage(url: string) {
       const currentPlayer = event.currentTarget as Thumbnail;
       const checkbox: HTMLElement = currentPlayer.querySelector('.youtube-watched-checkbox');
 
-      if (!currentPlayer.done) {
-        checkbox.style.zIndex = '-1000';
-      }
+      chrome.storage.sync.get(currentPlayer.videoId, (result: Holder) => {
+        if (!result[currentPlayer.videoId]) {
+          checkbox.style.zIndex = '-1000';
+        }
+      });
     },
   });
 
@@ -287,21 +287,21 @@ function setListenerForWatchPage(url: string) {
       const player: Thumbnail = currentCheckbox.parentElement;
       const videoId = player.videoId;
 
-      if (!player.done) {
-        player.done = true;
-        const obj: Holder = {};
-        obj[videoId] = 1;
-        chrome.storage.sync.set(obj, () => {
-          console.log('Save ' + JSON.stringify(obj));
-        });
-        currentCheckbox.style.zIndex = '1000';
-      } else {
-        player.done = false;
-        chrome.storage.sync.remove(videoId, () => {
-          console.log('Delete ' + JSON.stringify(videoId));
-        });
-        currentCheckbox.style.zIndex = '-1000';
-      }
+      chrome.storage.sync.get(videoId, (result: Holder) => {
+        if (result[videoId]) {
+          chrome.storage.sync.remove(videoId, () => {
+            console.log('Delete ' + JSON.stringify(videoId));
+          });
+          currentCheckbox.style.zIndex = '-1000';
+        } else {
+          const obj: Holder = {};
+          obj[videoId] = 1;
+          chrome.storage.sync.set(obj, () => {
+            console.log('Save ' + JSON.stringify(obj));
+          });
+          currentCheckbox.style.zIndex = '1000';
+        }
+      });
     },
   });
 }
@@ -324,7 +324,6 @@ function processThumbnail(thumbnail: Thumbnail) {
   if (!videoId) return;
 
   thumbnail.videoId = videoId;
-  thumbnail.done = false;
   const checkbox = document.createElement('div');
   checkbox.className = 'youtube-watched-checkbox';
   checkbox.innerHTML = 'WATCHED';
@@ -335,7 +334,6 @@ function processThumbnail(thumbnail: Thumbnail) {
       console.log('Read ' + JSON.stringify(result));
       checkbox.style.zIndex = '1000';
       thumbnail.classList.add('youtube-watched-thumbnail');
-      thumbnail.done = true;
     }
   });
 
@@ -344,9 +342,11 @@ function processThumbnail(thumbnail: Thumbnail) {
       const currentThumbnail = event.currentTarget as Thumbnail;
       const checkbox: HTMLElement = currentThumbnail.querySelector('.youtube-watched-checkbox');
 
-      if (!currentThumbnail.done) {
-        checkbox.style.zIndex = '1000';
-      }
+      chrome.storage.sync.get(thumbnail.videoId, (result: Holder) => {
+        if (!result[thumbnail.videoId]) {
+          checkbox.style.zIndex = '1000';
+        }
+      });
     },
   });
 
@@ -355,9 +355,11 @@ function processThumbnail(thumbnail: Thumbnail) {
       const currentThumbnail = event.currentTarget as Thumbnail;
       const checkbox: HTMLElement = currentThumbnail.querySelector('.youtube-watched-checkbox');
 
-      if (!currentThumbnail.done) {
-        checkbox.style.zIndex = '-1000';
-      }
+      chrome.storage.sync.get(thumbnail.videoId, (result: Holder) => {
+        if (!result[thumbnail.videoId]) {
+          checkbox.style.zIndex = '-1000';
+        }
+      });
     },
   });
 
@@ -371,22 +373,23 @@ function processThumbnail(thumbnail: Thumbnail) {
       const thumbnail: Thumbnail = currentCheckbox.parentElement;
       const videoId = thumbnail.videoId;
 
-      if (!thumbnail.done) {
-        thumbnail.done = true;
-        const obj: Holder = {};
-        obj[videoId] = 1;
-        chrome.storage.sync.set(obj, () => {
-          console.log('Save ' + JSON.stringify(obj));
-        });
-        currentCheckbox.style.zIndex = '1000';
-      } else {
-        thumbnail.done = false;
-        chrome.storage.sync.remove(videoId, () => {
-          console.log('Delete ' + JSON.stringify(videoId));
-        });
-        currentCheckbox.style.zIndex = '-1000';
-      }
-      thumbnail.classList.toggle('youtube-watched-thumbnail');
+      chrome.storage.sync.get(videoId, (result: Holder) => {
+        if (result[videoId]) {
+          chrome.storage.sync.remove(videoId, () => {
+            console.log('Delete ' + JSON.stringify(videoId));
+          });
+          currentCheckbox.style.zIndex = '-1000';
+          thumbnail.classList.remove('youtube-watched-thumbnail');
+        } else {
+          const obj: Holder = {};
+          obj[videoId] = 1;
+          chrome.storage.sync.set(obj, () => {
+            console.log('Save ' + JSON.stringify(obj));
+          });
+          currentCheckbox.style.zIndex = '1000';
+          thumbnail.classList.add('youtube-watched-thumbnail');
+        }
+      });
     },
   });
 }
