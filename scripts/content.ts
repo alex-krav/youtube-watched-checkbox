@@ -306,59 +306,7 @@ function processVideoPlayer(url: string) {
   updateElementsIfVideoMarkedAsWatched(videoId, checkbox, player, false);
 
   // todo: check if listeners not applied twice
-  player.addEventListener('mouseenter', {
-    handleEvent(event) {
-      const currentPlayer = event.currentTarget as Thumbnail;
-      const checkbox: HTMLElement = currentPlayer.querySelector('.youtube-watched-checkbox');
-
-      chrome.storage.sync.get(currentPlayer.videoId, (result: Holder) => {
-        if (!result[currentPlayer.videoId]) {
-          checkbox.style.zIndex = '1000';
-        }
-      });
-    },
-  });
-
-  player.addEventListener('mouseleave', {
-    handleEvent(event) {
-      const currentPlayer = event.currentTarget as Thumbnail;
-      const checkbox: HTMLElement = currentPlayer.querySelector('.youtube-watched-checkbox');
-
-      chrome.storage.sync.get(currentPlayer.videoId, (result: Holder) => {
-        if (!result[currentPlayer.videoId]) {
-          checkbox.style.zIndex = '-1000';
-        }
-      });
-    },
-  });
-
-  checkbox.addEventListener('click', {
-    handleEvent(event) {
-      event.stopPropagation();
-      event.preventDefault();
-      event.stopImmediatePropagation();
-
-      const currentCheckbox = event.currentTarget as HTMLElement;
-      const player: Thumbnail = currentCheckbox.parentElement;
-      const videoId = player.videoId;
-
-      chrome.storage.sync.get(videoId, (result: Holder) => {
-        if (result[videoId]) {
-          chrome.storage.sync.remove(videoId, () => {
-            console.log('Delete ' + JSON.stringify(videoId));
-          });
-          currentCheckbox.style.zIndex = '-1000';
-        } else {
-          const obj: Holder = {};
-          obj[videoId] = 1;
-          chrome.storage.sync.set(obj, () => {
-            console.log('Save ' + JSON.stringify(obj));
-          });
-          currentCheckbox.style.zIndex = '1000';
-        }
-      });
-    },
-  });
+  addElementsEventListeners(player, checkbox, false);
 }
 
 /**
@@ -392,61 +340,7 @@ function processThumbnail(thumbnail: Thumbnail) {
   updateElementsIfVideoMarkedAsWatched(videoId, checkbox, thumbnail, true);
 
   // todo: check if listeners not applied twice
-  thumbnail.addEventListener('mouseenter', {
-    handleEvent(event) {
-      const currentThumbnail = event.currentTarget as Thumbnail;
-      const checkbox: HTMLElement = currentThumbnail.querySelector('.youtube-watched-checkbox');
-
-      chrome.storage.sync.get(thumbnail.videoId, (result: Holder) => {
-        if (!result[thumbnail.videoId]) {
-          checkbox.style.zIndex = '1000';
-        }
-      });
-    },
-  });
-
-  thumbnail.addEventListener('mouseleave', {
-    handleEvent(event) {
-      const currentThumbnail = event.currentTarget as Thumbnail;
-      const checkbox: HTMLElement = currentThumbnail.querySelector('.youtube-watched-checkbox');
-
-      chrome.storage.sync.get(thumbnail.videoId, (result: Holder) => {
-        if (!result[thumbnail.videoId]) {
-          checkbox.style.zIndex = '-1000';
-        }
-      });
-    },
-  });
-
-  checkbox.addEventListener('click', {
-    handleEvent(event) {
-      event.stopPropagation();
-      event.preventDefault();
-      event.stopImmediatePropagation();
-
-      const currentCheckbox = event.currentTarget as HTMLElement;
-      const thumbnail: Thumbnail = currentCheckbox.parentElement;
-      const videoId = thumbnail.videoId;
-
-      chrome.storage.sync.get(videoId, (result: Holder) => {
-        if (result[videoId]) {
-          chrome.storage.sync.remove(videoId, () => {
-            console.log('Delete ' + JSON.stringify(videoId));
-          });
-          currentCheckbox.style.zIndex = '-1000';
-          thumbnail.classList.remove('youtube-watched-thumbnail');
-        } else {
-          const obj: Holder = {};
-          obj[videoId] = 1;
-          chrome.storage.sync.set(obj, () => {
-            console.log('Save ' + JSON.stringify(obj));
-          });
-          currentCheckbox.style.zIndex = '1000';
-          thumbnail.classList.add('youtube-watched-thumbnail');
-        }
-      });
-    },
-  });
+  addElementsEventListeners(thumbnail, checkbox, true);
 }
 
 /**
@@ -486,6 +380,86 @@ function updateElementsIfVideoMarkedAsWatched(videoId: string, checkbox: HTMLDiv
     if (result[videoId]) {
       console.log('Read ' + JSON.stringify(result));
       checkbox.style.zIndex = '1000';
+      if (changeThumbnailOpacity) {
+        thumbnail.classList.add('youtube-watched-thumbnail');
+      }
+    }
+  });
+}
+
+/**
+ * Add mouseenter, mouseleave event listeners for Thumbnail.
+ * And click event listener for checkbox
+ * @param {Thumbnail} thumbnail
+ * @param {HTMLDivElement} checkbox
+ * @param {boolean} changeThumbnailOpacity
+ */
+function addElementsEventListeners(thumbnail: Thumbnail, checkbox: HTMLDivElement, changeThumbnailOpacity: boolean) {
+  thumbnail.addEventListener('mouseenter', mouseEnterHandler);
+  thumbnail.addEventListener('mouseleave', mouseLeaveHanlder);
+  checkbox.addEventListener('click', () => clickHandler(event, changeThumbnailOpacity));
+}
+
+/**
+ * Handler for 'mouseenter' event
+ * @param {Event} event
+ */
+function mouseEnterHandler(event: Event) {
+  const currentThumbnail = event.currentTarget as Thumbnail;
+  const checkbox: HTMLElement = currentThumbnail.querySelector('.youtube-watched-checkbox');
+
+  chrome.storage.sync.get(currentThumbnail.videoId, (result: Holder) => {
+    if (!result[currentThumbnail.videoId]) {
+      checkbox.style.zIndex = '1000';
+    }
+  });
+}
+
+/**
+ * Handler for 'mouseleave' event
+ * @param {Event} event
+ */
+function mouseLeaveHanlder(event: Event) {
+  const currentThumbnail = event.currentTarget as Thumbnail;
+  const checkbox: HTMLElement = currentThumbnail.querySelector('.youtube-watched-checkbox');
+
+  chrome.storage.sync.get(currentThumbnail.videoId, (result: Holder) => {
+    if (!result[currentThumbnail.videoId]) {
+      checkbox.style.zIndex = '-1000';
+    }
+  });
+}
+
+/**
+ * Handler for 'click' event
+ * @param {Event} event
+ * @param {boolean} changeThumbnailOpacity
+ */
+function clickHandler(event: Event, changeThumbnailOpacity: boolean) {
+  event.stopPropagation();
+  event.preventDefault();
+  event.stopImmediatePropagation();
+
+  const currentCheckbox = event.currentTarget as HTMLElement;
+  const thumbnail: Thumbnail = currentCheckbox.parentElement;
+  const videoId = thumbnail.videoId;
+
+  chrome.storage.sync.get(videoId, (result: Holder) => {
+    if (result[videoId]) {
+      chrome.storage.sync.remove(videoId, () => {
+        console.log('Delete ' + JSON.stringify(videoId));
+      });
+      currentCheckbox.style.zIndex = '-1000';
+      if (changeThumbnailOpacity) {
+        thumbnail.classList.remove('youtube-watched-thumbnail');
+      }
+    } else {
+      const obj: Holder = {};
+      obj[videoId] = 1;
+      chrome.storage.sync.set(obj, () => {
+        console.log('Save ' + JSON.stringify(obj));
+      });
+      currentCheckbox.style.zIndex = '1000';
       if (changeThumbnailOpacity) {
         thumbnail.classList.add('youtube-watched-thumbnail');
       }
