@@ -245,6 +245,19 @@ function setListenerForWatchPage(url: string) {
   const videoId = new URL(url).searchParams.get('v');
   console.log('watch page videoId: ' + videoId);
 
+  if (player.videoId) {
+    player.videoId = videoId; // current video value
+    chrome.storage.sync.get(player.videoId, (result: Holder) => {
+      const checkbox: HTMLElement = player.querySelector('.youtube-watched-checkbox');
+      if (result[player.videoId]) {
+        checkbox.style.zIndex = '1000';
+      } else {
+        checkbox.style.zIndex = '-1000';
+      }
+    });
+    return;
+  }
+
   player.videoId = videoId;
   const checkbox = document.createElement('div');
   checkbox.className = 'youtube-watched-checkbox';
