@@ -16,13 +16,34 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   }
 
   if (currentUrl && prevUrl && currentUrl !== prevUrl && videoId1 !== videoId2) {
-    console.log('sending url: ' + currentUrl);
-
     // window.onload = (event) => {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, {url: currentUrl}, null);
+      ensureSendMessage(tabs[0].id, {url: currentUrl}, null);
     });
     // };
   }
   prevUrl = currentUrl;
 }, {url: [{urlMatches: 'https://www.youtube.com/'}]}); // todo: check if url causing bugs?
+
+/**
+ * Ensure message is sent to content script
+ * @param {number} tabId
+ * @param {Message} message
+ * @param {function} callback
+ */
+function ensureSendMessage(tabId: number, message: Message, callback: (result: chrome.tabs.Tab[]) => void) {
+  chrome.tabs.sendMessage(tabId, {ping: true}, function(response) {
+    if (response && response.pong) { // Content script ready
+      console.log('received pong');
+      console.log('sending url: ' + JSON.stringify(message));
+      chrome.tabs.sendMessage(tabId, message, callback);
+    } else {
+      const startTime = Date.now();
+      setTimeout(() => {
+        console.log('background timeout: ' + (Date.now() - startTime));
+        console.log('sending url: ' + JSON.stringify(message));
+        chrome.tabs.sendMessage(tabId, message, callback);
+      }, 10000);
+    }
+  });
+}

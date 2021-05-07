@@ -15,10 +15,14 @@ interface Holder {
 
 const thumbnailPath = 'ytd-thumbnail a[id=\'thumbnail\']';
 
-// page updated (user clicked on video etc)
-chrome.runtime.onMessage.addListener((message: Message) => {
-  console.log('path updated: ' + message.url);
-  processUrl(message.url);
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.ping) {
+    console.log('received ping');
+    sendResponse({pong: true});
+    return;
+  }
+  console.log('path updated: ' + request.url);
+  processUrl(request.url);
 });
 
 // first time load of website
