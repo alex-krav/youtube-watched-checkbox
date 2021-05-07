@@ -232,11 +232,9 @@ function setListeners(elements: string[], containers: string[], containerIds: nu
  */
 function setListenerForWatchPage(url: string) {
   console.log('watch page URL: ' + url);
+  const player: Thumbnail = document.querySelector('#primary #player');
   const videoId = new URL(url).searchParams.get('v');
   console.log('watch page videoId: ' + videoId);
-
-  // const player: Thumbnail = document.querySelector('video');
-  const player: Thumbnail = document.querySelector('#primary #player');
 
   player.videoId = videoId;
   const checkbox = document.createElement('div');
@@ -251,6 +249,7 @@ function setListenerForWatchPage(url: string) {
     }
   });
 
+  // todo: check if listeners not applied twice
   player.addEventListener('mouseenter', {
     handleEvent(event) {
       const currentPlayer = event.currentTarget as Thumbnail;
@@ -312,7 +311,17 @@ function setListenerForWatchPage(url: string) {
  */
 function processThumbnail(thumbnail: Thumbnail) {
   if (thumbnail.videoId) {
-    console.log('OOPS! thumb has ' + thumbnail.videoId);
+    console.log('processing thumbnail: ' + thumbnail.videoId);
+    chrome.storage.sync.get(thumbnail.videoId, (result: Holder) => {
+      const checkbox: HTMLElement = thumbnail.querySelector('.youtube-watched-checkbox');
+      if (result[thumbnail.videoId]) {
+        checkbox.style.zIndex = '1000';
+        thumbnail.classList.add('youtube-watched-thumbnail');
+      } else {
+        checkbox.style.zIndex = '-1000';
+        thumbnail.classList.remove('youtube-watched-thumbnail');
+      }
+    });
     return; // todo: check for possible source of not processing thumbnails on some pages
   }
   const href = thumbnail.getAttribute('href');
@@ -337,6 +346,7 @@ function processThumbnail(thumbnail: Thumbnail) {
     }
   });
 
+  // todo: check if listeners not applied twice
   thumbnail.addEventListener('mouseenter', {
     handleEvent(event) {
       const currentThumbnail = event.currentTarget as Thumbnail;
