@@ -1,6 +1,8 @@
 'use strict';
 
 // page updated (user clicked on video etc)
+import {Message} from './scripts/content';
+
 let prevUrl = '';
 
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {

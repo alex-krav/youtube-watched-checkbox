@@ -1,6 +1,6 @@
 'use strict';
 
-interface Message {
+export interface Message {
   url: string;
   ping?: boolean;
   pong?: boolean;
@@ -56,7 +56,7 @@ function processUrl(url: string) {
  * @param {string[]} containerId
  * @param {string[]} containerItem
  */
-function setElementSelectors(path: string, elementsPath: string[], containersPath: string[],
+export function setElementSelectors(path: string, elementsPath: string[], containersPath: string[],
     containerId: number[], containerItem: string[]) {
   if (path.match(/^\/$/)) {
     console.log('MATCHED HOME');

@@ -25,6 +25,10 @@
     "max-len": ["error", {
       "code": 130
     }],
-    "linebreak-style": ["error", "windows"]
+    "linebreak-style": ["error", "windows"],
+    "@typescript-eslint/no-var-requires": 0
+  },
+  "globals": {
+    "chrome": true
   }
 }

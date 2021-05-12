@@ -2,9 +2,11 @@
   "compilerOptions": {
     "noImplicitAny": true,
     "noEmitOnError": true,
-    "target": "es6"
+    "module": "commonjs",
+    "target": "es6",
+    "allowSyntheticDefaultImports": true
   },
   "include": [
-    "**/*"
+    "**/*.ts"
   ]
 }

@@ -1,13 +1,13 @@
 {
   "scripts": {
-    "test": "mocha",
+    "test": "mocha -r ts-node/register tests/*.test.ts",
     "build": "tsc --build",
     "clean": "tsc --build --clean"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "npm run test && npm run build"
+      "pre-commit": "lint-staged && npm run build",
+      "pre-push": "npm run test"
     }
   },
   "lint-staged": {
@@ -16,14 +16,22 @@
     ]
   },
   "devDependencies": {
+    "@types/chai": "^4.2.18",
     "@types/chrome": "^0.0.137",
     "@types/mocha": "^8.2.2",
     "@types/node": "^15.0.2",
     "@typescript-eslint/eslint-plugin": "^4.21.0",
-    "eslint": "^7.23.0",
+    "@typescript-eslint/parser": "^4.23.0",
+    "chai": "^4.3.4",
+    "eslint": "^7.26.0",
     "eslint-config-google": "^0.14.0",
     "husky": "^4.3.8",
+    "jsdom": "16.5.3",
+    "jsdom-global": "^3.0.2",
     "lint-staged": "^10.5.4",
-    "mocha": "^8.3.2"
+    "mocha": "^8.4.0",
+    "sinon-chrome": "^3.0.1",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
   }
 }
