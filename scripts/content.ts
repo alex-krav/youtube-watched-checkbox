@@ -57,7 +57,7 @@ function processUrl(url: string) {
  * @param {string[]} containerItem
  */
 export function setElementSelectors(path: string, elementsPath: string[], containersPath: string[],
-    containerId: number[], containerItem: string[]) {
+    containerId: number[], containerItem: string[]): void {
   if (path.match(/^\/$/)) {
     console.log('MATCHED HOME');
     elementsPath.push('ytd-rich-grid-renderer ytd-rich-item-renderer ytd-rich-grid-media');
@@ -360,7 +360,7 @@ function getVideoId(thumbnail: Thumbnail): string {
  * Create checkbox for toggling watched videos
  * @return {HTMLDivElement} checkbox
  */
-function createCheckboxDiv() {
+export function createCheckboxDiv(): HTMLDivElement {
   const checkbox = document.createElement('div');
   checkbox.className = 'youtube-watched-checkbox';
   checkbox.innerHTML = 'WATCHED';

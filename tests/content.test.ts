@@ -7,7 +7,7 @@ global.chrome = chrome;
 
 require('jsdom-global')();
 
-import {setElementSelectors} from '../scripts/content';
+import {createCheckboxDiv, setElementSelectors} from '../scripts/content';
 
 let elementsPath: string[] = [];
 let containersPath: string[] = [];
@@ -152,6 +152,16 @@ describe('setElementSelectors', function() {
   });
 });
 
+describe('createCheckboxDiv', function() {
+  it('createCheckboxDiv', function() {
+    const checkbox = createCheckboxDiv();
+
+    chai.expect(checkbox.tagName).equal('DIV');
+    chai.expect(checkbox.className).equal('youtube-watched-checkbox');
+    chai.expect(checkbox.innerHTML).equal('WATCHED');
+  });
+});
+
 /**
  * Assertion function for 'setElementSelectors' test
  * @param {string[]} expectedElementsPath elementsPath
@@ -159,7 +169,7 @@ describe('setElementSelectors', function() {
  * @param {string[]} expectedContainerId containerId
  * @param {string[]} expectedContainerItem containerItem
  */
-function assertElementSelectors(expectedElementsPath: string[], expectedContainersPath: string[],
+export function assertElementSelectors(expectedElementsPath: string[], expectedContainersPath: string[],
     expectedContainerId: number[], expectedContainerItem: string[]) {
   chai.expect(elementsPath).length(expectedElementsPath.length);
   chai.expect(elementsPath).eql(expectedElementsPath);
