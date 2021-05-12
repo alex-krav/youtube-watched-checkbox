@@ -6,7 +6,7 @@ export interface Message {
   pong?: boolean;
 }
 
-interface Thumbnail extends HTMLElement {
+export interface Thumbnail extends HTMLElement {
   videoId?: string;
 }
 
@@ -348,7 +348,7 @@ function processThumbnail(thumbnail: Thumbnail) {
  * @param {Thumbnail} thumbnail
  * @return {string} videoId
  */
-function getVideoId(thumbnail: Thumbnail): string {
+export function getVideoId(thumbnail: Thumbnail): string {
   const href = thumbnail.getAttribute('href');
   if (!href) return null;
 

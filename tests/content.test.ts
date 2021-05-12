@@ -7,7 +7,12 @@ global.chrome = chrome;
 
 require('jsdom-global')();
 
-import {createCheckboxDiv, setElementSelectors} from '../scripts/content';
+import {
+  Thumbnail,
+  createCheckboxDiv,
+  getVideoId,
+  setElementSelectors,
+} from '../scripts/content';
 
 let elementsPath: string[] = [];
 let containersPath: string[] = [];
@@ -152,13 +157,31 @@ describe('setElementSelectors', function() {
   });
 });
 
-describe('createCheckboxDiv', function() {
+describe('util functions', function() {
   it('createCheckboxDiv', function() {
     const checkbox = createCheckboxDiv();
 
     chai.expect(checkbox.tagName).equal('DIV');
     chai.expect(checkbox.className).equal('youtube-watched-checkbox');
     chai.expect(checkbox.innerHTML).equal('WATCHED');
+  });
+
+  it('getVideoId', function() {
+    const url = 'http://dummy.com';
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: url,
+      },
+    });
+    const thumbnail = <Thumbnail>{
+      getAttribute(qualifiedName: string): string | null {
+        return '/watch?v=12345';
+      },
+    };
+
+    const videoId = getVideoId(thumbnail);
+
+    chai.expect(videoId).equal('12345');
   });
 });
 
