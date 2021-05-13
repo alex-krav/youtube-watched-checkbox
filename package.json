@@ -1,5 +1,5 @@
 {
-  "name": "YouTube watched checkbox",
+  "name": "youtube-watched-checkbox",
   "version": "1.0.0",
   "description": "Manually select YouTube watched videos.",
   "scripts": {
