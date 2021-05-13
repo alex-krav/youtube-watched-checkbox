@@ -14,16 +14,18 @@ interface Holder {
   [key: string]: number
 }
 
+console.debug = function() {};
+
 const YOUTUBE_HOST_REGEX = /https?:\/\/(www\.)?youtube\.com/;
 const THUMBNAIL_PATH = 'ytd-thumbnail a[id=\'thumbnail\']';
 const PAGE_LOAD_TIMEOUT = 5000;
 
 chrome.runtime.onMessage.addListener(function(request: Message, sender, sendResponse) {
   if (request.ping) {
-    console.log('received ping');
+    console.debug('received ping');
     sendResponse({pong: true});
   }
-  console.log('path updated: ' + request.url);
+  console.debug('path updated: ' + request.url);
   sendResponse({pong: true});
   processUrl(request.url);
 });
@@ -39,7 +41,7 @@ function processUrl(url: string) {
   if (!url) return;
 
   const path = url.replace(YOUTUBE_HOST_REGEX, '');
-  console.log('PATH: ' + path);
+  console.debug('PATH: ' + path);
 
   const elementsPath: string[] = [];
   const containersPath: string[] = [];
@@ -61,14 +63,14 @@ function processUrl(url: string) {
 export function setElementSelectors(path: string, elementsPath: string[], containersPath: string[],
     containerId: number[], containerItem: string[]): void {
   if (path.match(/^\/$/)) {
-    console.log('MATCHED HOME');
+    console.debug('MATCHED HOME');
     elementsPath.push('ytd-rich-grid-renderer ytd-rich-item-renderer ytd-rich-grid-media');
     containersPath.push('ytd-rich-grid-renderer #contents');
     containerId.push(0);
     containerItem.push('ytd-rich-item-renderer');
   } else if (path.match(/^\/results/)) {
     // fixme: 'people also watch' AND after it don't work
-    console.log('MATCHED HOME SEARCH');
+    console.debug('MATCHED HOME SEARCH');
     elementsPath.push('ytd-section-list-renderer ytd-item-section-renderer ytd-video-renderer',
         'ytd-vertical-list-renderer ytd-video-renderer');
     containersPath.push('ytd-section-list-renderer > #contents', 'ytd-vertical-list-renderer > #items');
@@ -76,14 +78,14 @@ export function setElementSelectors(path: string, elementsPath: string[], contai
     containerItem.push('ytd-item-section-renderer', 'ytd-video-renderer');
   } else if (path.match(/^\/user\/[^/]*|^\/c\/[^/]*\/featured$/)) {
     // fixme: only first 3 playlists work
-    console.log('MATCHED USER HOME'); // todo: observer for loading of new playlists
+    console.debug('MATCHED USER HOME'); // todo: observer for loading of new playlists
     elementsPath.push('yt-horizontal-list-renderer ytd-grid-video-renderer');
     containersPath.push('yt-horizontal-list-renderer #items');
     containerId.push(-1);
     containerItem.push('ytd-grid-video-renderer');
   } else if (path.match(/^\/c\/[^/]*\/[^f]/)) {
     if (path.match(/^\/c\/[^/]*\/videos$/)) {
-      console.log('MATCHED USER VIDEOS');
+      console.debug('MATCHED USER VIDEOS');
       elementsPath.push('ytd-grid-renderer ytd-grid-video-renderer');
       containersPath.push('ytd-grid-renderer #items');
       containerId.push(0);
@@ -91,7 +93,7 @@ export function setElementSelectors(path: string, elementsPath: string[], contai
     } else if (path.match(/^\/c\/[^/]*\/search/)) {
       // fixme first: only first 3 videos work
       // fixme navigation: new videos after scroll don't work
-      console.log('MATCHED USER SEARCH');
+      console.debug('MATCHED USER SEARCH');
       elementsPath.push('ytd-section-list-renderer ytd-item-section-renderer ytd-video-renderer');
       containersPath.push('ytd-section-list-renderer > #contents');
       containerId.push(1);
@@ -100,13 +102,13 @@ export function setElementSelectors(path: string, elementsPath: string[], contai
   } else if (path.match(/^\/channel\//)) {
     // channel
     if (path.match(/^\/channel\/[^/]*$|^\/channel\/[^/]*\/featured/)) {
-      console.log('MATCHED CHANNEL HOME'); // todo: observer for loading of new playlists
+      console.debug('MATCHED CHANNEL HOME'); // todo: observer for loading of new playlists
       elementsPath.push('yt-horizontal-list-renderer ytd-grid-video-renderer');
       containersPath.push('yt-horizontal-list-renderer #items');
       containerId.push(-1);
       containerItem.push('ytd-grid-video-renderer');
     } else if (path.match(/^\/channel\/[^/]*\/videos$/)) {
-      console.log('MATCHED CHANNEL VIDEOS');
+      console.debug('MATCHED CHANNEL VIDEOS');
       elementsPath.push('ytd-grid-renderer ytd-grid-video-renderer');
       containersPath.push('ytd-grid-renderer #items');
       containerId.push(0);
@@ -114,7 +116,7 @@ export function setElementSelectors(path: string, elementsPath: string[], contai
     } else if (path.match(/^\/channel\/[^/]*\/search/)) {
       // fixme: on first load - processed first 3 videos
       // fixme: didn't work on webNavigation.HistoryUpdated
-      console.log('MATCHED CHANNEL SEARCH');
+      console.debug('MATCHED CHANNEL SEARCH');
       elementsPath.push('ytd-section-list-renderer ytd-item-section-renderer ytd-video-renderer');
       containersPath.push('ytd-section-list-renderer > #contents');
       containerId.push(1);
@@ -123,7 +125,7 @@ export function setElementSelectors(path: string, elementsPath: string[], contai
   } else if (path.match(/^\/watch/)) {
     // watch
     if (path.match(/^\/watch\?.*list=/)) {
-      console.log('MATCHED VIDEO WITH PLAYLIST AND RELATED');
+      console.debug('MATCHED VIDEO WITH PLAYLIST AND RELATED');
       elementsPath.push('ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer',
           'ytd-watch-next-secondary-results-renderer ytd-item-section-renderer ytd-compact-video-renderer');
       containersPath.push('ytd-playlist-panel-renderer #items',
@@ -131,14 +133,14 @@ export function setElementSelectors(path: string, elementsPath: string[], contai
       containerId.push(0, 0);
       containerItem.push('ytd-playlist-panel-video-renderer', 'ytd-compact-video-renderer');
     } else {
-      console.log('MATCHED VIDEO WITH RELATED');
+      console.debug('MATCHED VIDEO WITH RELATED');
       elementsPath.push('ytd-watch-next-secondary-results-renderer ytd-item-section-renderer ytd-compact-video-renderer');
       containersPath.push('ytd-watch-next-secondary-results-renderer ytd-item-section-renderer #contents');
       containerId.push(0);
       containerItem.push('ytd-compact-video-renderer');
     }
   } else if (path.match(/^\/playlist/)) {
-    console.log('MATCHED PLAYLIST');
+    console.debug('MATCHED PLAYLIST');
     elementsPath.push('ytd-playlist-video-list-renderer ytd-playlist-video-renderer');
     containersPath.push('ytd-playlist-video-list-renderer #contents');
     containerId.push(0);
@@ -149,27 +151,27 @@ export function setElementSelectors(path: string, elementsPath: string[], contai
       // fixme: /feed/subscriptions?flow=2 - all don't work
       // fixme: /feed/subscriptions - videos after scroll don't work
       // fixme: /feed/library - 'show more' don't work
-      console.log('MATCHED FEED SUBSCRIPTIONS OR LIBRARY');
+      console.debug('MATCHED FEED SUBSCRIPTIONS OR LIBRARY');
       elementsPath.push('ytd-grid-renderer ytd-grid-video-renderer');
       containersPath.push('ytd-grid-renderer #items');
       containerId.push(-1);
       containerItem.push('ytd-grid-video-renderer');
     } else if (path.match(/^\/feed\/explore$/)) {
-      console.log('MATCHED FEED EXPLORE');
+      console.debug('MATCHED FEED EXPLORE');
       elementsPath.push('ytd-expanded-shelf-contents-renderer ytd-video-renderer');
       containersPath.push('ytd-expanded-shelf-contents-renderer #grid-container');
       containerId.push(0);
       containerItem.push('ytd-video-renderer');
     } else if (path.match(/^\/feed\/history$/)) {
       // fixme: videos after scroll don't work
-      console.log('MATCHED FEED HISTORY');
+      console.debug('MATCHED FEED HISTORY');
       elementsPath.push('ytd-section-list-renderer ytd-item-section-renderer ytd-video-renderer');
       containersPath.push('ytd-section-list-renderer > #contents');
       containerId.push(0);
       containerItem.push('ytd-item-section-renderer');
     }
   } else {
-    console.log('DIDN\'T MATCH');
+    console.debug('DIDN\'T MATCH');
   }
 }
 
@@ -185,17 +187,17 @@ export function setElementSelectors(path: string, elementsPath: string[], contai
 function setListeners(url: string, path: string, elementsPath: string[], containersPath: string[],
     containerId: number[], containerItem: string[]) {
   const elementPath = elementsPath[0] + ' ' + THUMBNAIL_PATH;
-  console.log('TEST: ' + elementPath);
+  console.debug('TEST: ' + elementPath);
   let elements = document.querySelectorAll(elementPath);
 
   if (!elements.length) {
     const startTime = Date.now();
     setTimeout(() => {
-      console.log('timeout 1: ' + (Date.now() - startTime));
+      console.debug('timeout 1: ' + (Date.now() - startTime));
       elements = document.querySelectorAll(elementPath);
       if (!elements.length) {
         setTimeout(() => {
-          console.log('timeout 2: ' + (Date.now() - startTime));
+          console.debug('timeout 2: ' + (Date.now() - startTime));
           elements = document.querySelectorAll(elementPath);
           processElements(elementsPath, containersPath, containerId, containerItem);
           if (path.match(/^\/watch/)) {
@@ -227,9 +229,9 @@ function setListeners(url: string, path: string, elementsPath: string[], contain
 function processElements(elements: string[], containers: string[], containerIds: number[], containerItems: string[]) {
   for (let i = 0; i < elements.length; i++) {
     const elementPath = elements[i] + ' ' + THUMBNAIL_PATH;
-    console.log('elementPath: ' + elementPath);
+    console.debug('elementPath: ' + elementPath);
     const containerPath = containers[i];
-    console.log('containerPath: ' + containerPath);
+    console.debug('containerPath: ' + containerPath);
 
     const thumbnailElements: NodeListOf<HTMLElement> = document.querySelectorAll(elementPath);
 
@@ -283,10 +285,10 @@ function setObserverForDynamicallyLoadedElements(index: number, containerPath: s
  * @param {string} url
  */
 function processVideoPlayer(url: string) {
-  console.log('watch page URL: ' + url);
+  console.debug('watch page URL: ' + url);
   const player: Thumbnail = document.querySelector('#primary #player') as Thumbnail;
   const videoId = new URL(url).searchParams.get('v');
-  console.log('watch page videoId: ' + videoId);
+  console.debug('watch page videoId: ' + videoId);
 
   if (player.videoId) {
     player.videoId = videoId as string; // current video value
@@ -317,7 +319,7 @@ function processVideoPlayer(url: string) {
  */
 function processThumbnail(thumbnail: Thumbnail) {
   if (thumbnail.videoId) {
-    console.log('processing thumbnail: ' + thumbnail.videoId);
+    console.debug('processing thumbnail: ' + thumbnail.videoId);
     chrome.storage.sync.get(thumbnail.videoId, (result: Holder) => {
       const checkbox: HTMLElement = thumbnail.querySelector('.youtube-watched-checkbox') as HTMLElement;
       if (result[thumbnail.videoId as string]) {
@@ -333,7 +335,7 @@ function processThumbnail(thumbnail: Thumbnail) {
 
   const videoId = getVideoId(thumbnail);
   if (!videoId) return;
-  console.log('found videoId: ' + videoId);
+  console.debug('found videoId: ' + videoId);
 
   thumbnail.videoId = videoId;
   const checkbox = createCheckboxDiv();
@@ -380,7 +382,7 @@ function updateElementsIfVideoMarkedAsWatched(videoId: string, checkbox: HTMLDiv
     changeThumbnailOpacity: boolean) {
   chrome.storage.sync.get(videoId, (result: Holder) => {
     if (result[videoId]) {
-      console.log('Read ' + JSON.stringify(result));
+      console.debug('Read ' + JSON.stringify(result));
       checkbox.style.zIndex = '1000';
       if (changeThumbnailOpacity) {
         thumbnail.classList.add('youtube-watched-thumbnail');
@@ -449,7 +451,7 @@ function clickHandler(event: Event, changeThumbnailOpacity: boolean) {
   chrome.storage.sync.get(videoId as string, (result: Holder) => {
     if (result[videoId as string]) {
       chrome.storage.sync.remove(videoId as string, () => {
-        console.log('Delete ' + JSON.stringify(videoId));
+        console.debug('Delete ' + JSON.stringify(videoId));
       });
       currentCheckbox.style.zIndex = '-1000';
       if (changeThumbnailOpacity) {
@@ -459,7 +461,7 @@ function clickHandler(event: Event, changeThumbnailOpacity: boolean) {
       const obj: Holder = {};
       obj[videoId as string] = 1;
       chrome.storage.sync.set(obj, () => {
-        console.log('Save ' + JSON.stringify(obj));
+        console.debug('Save ' + JSON.stringify(obj));
       });
       currentCheckbox.style.zIndex = '1000';
       if (changeThumbnailOpacity) {
@@ -480,7 +482,7 @@ function newElementsCallback(mutations: MutationRecord[], element: string) {
       if (!(node instanceof HTMLElement)) continue;
 
       if (node.matches(element)) {
-        console.log('observer processing thumbnail...');
+        console.debug('observer processing thumbnail...');
         const thumbnail: Thumbnail = node.querySelector(THUMBNAIL_PATH) as Thumbnail;
         if (thumbnail) {
           processThumbnail(thumbnail);
