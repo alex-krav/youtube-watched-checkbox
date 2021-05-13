@@ -1,4 +1,7 @@
 # YouTube Watched Checkbox
+
+[![build](https://github.com/alex-krav/youtube-watched-checkbox/actions/workflows/build.yml/badge.svg)](https://github.com/alex-krav/youtube-watched-checkbox/actions/workflows/build.yml)
+
 Google Chrome extension for manual selection of YouTube watched videos.
 
 ## What for?
