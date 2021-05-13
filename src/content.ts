@@ -169,7 +169,7 @@ export function setElementSelectors(path: string, elementsPath: string[], contai
       containerItem.push('ytd-item-section-renderer');
     }
   } else {
-    console.log('DIDN\'T MATCH'); // todo: check not youtube websites
+    console.log('DIDN\'T MATCH');
   }
 }
 

@@ -15,15 +15,26 @@ Marked videos won't scatter your attention when searching for something or brows
 
 ## Main functionality
 - Installing extension via Chrome Web Store
-- Marking videos as 'Done' or unmarking them back
-- Data is saved in Chrome Storage
+- Marking videos as 'Watched' or unmarking them back
+- Data is saved in Chrome Sync Storage
 
 ## Supported pages
+
+### Fully functional
 - YouTube homepage
 - Channel / User videos
 - Playlist
 - Video 
 
+### When scrolling down, new videos don't receive checkbox
+- YouTube search results
+- Channel / User homepage and search
+- /feed/subscriptions
+- /feed/history
+
+### Scrolling is not tested
+- /feed/library
+- /feed/explore
 
 ## Architecture
 
@@ -35,3 +46,60 @@ Marked videos won't scatter your attention when searching for something or brows
 
 ### Sequence diagram of key scenarios
 ![Key scenarios](./doc/key-scenarios.png)
+
+## Roadmap
+
+### Frontend
+- fix nonworking pages
+- add support for all YouTube pages
+- add support for marking playlists
+- allow user to see all marked videos and unmark them in batch
+
+### Backend
+- add Cloud sync (user can clear [Chrome](https://chrome.google.com/sync) data )
+
+## Development 
+
+### Prerequisites
+
+* [node + npm](https://nodejs.org/) (Current Version)
+
+### Technologies used
+
+* TypeScript
+* Webpack
+* chrome.extension API  
+* Mocha, Chai, Selenium
+
+### Setup
+
+```
+npm install
+```
+
+### Build
+
+```
+npm run build
+```
+
+### Build in watch mode
+
+```
+npm run watch
+```
+
+### Load extension
+
+Load extension on Chrome following:
+1. Access `chrome://extensions/`
+2. Check `Developer mode`
+3. Click on `Load unpacked extension`
+4. Select the `dist` folder.
+5. Reload YouTube page.
+
+### Test
+
+```
+npm run test
+```
