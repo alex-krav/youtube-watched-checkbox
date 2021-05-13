@@ -1,6 +1,5 @@
 *.iml
 .idea/
-youtube/
+_ignored/
 node_modules/
-config/
 dist/

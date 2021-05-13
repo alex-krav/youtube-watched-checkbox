@@ -282,15 +282,15 @@ function setObserverForDynamicallyLoadedElements(index: number, containerPath: s
  */
 function processVideoPlayer(url: string) {
   console.log('watch page URL: ' + url);
-  const player: Thumbnail = document.querySelector('#primary #player');
+  const player: Thumbnail = document.querySelector('#primary #player') as Thumbnail;
   const videoId = new URL(url).searchParams.get('v');
   console.log('watch page videoId: ' + videoId);
 
   if (player.videoId) {
-    player.videoId = videoId; // current video value
+    player.videoId = videoId as string; // current video value
     chrome.storage.sync.get(videoId, (result: Holder) => {
-      const checkbox: HTMLElement = player.querySelector('.youtube-watched-checkbox');
-      if (result[videoId]) {
+      const checkbox: HTMLElement = player.querySelector('.youtube-watched-checkbox') as HTMLElement;
+      if (result[videoId as string]) {
         checkbox.style.zIndex = '1000';
       } else {
         checkbox.style.zIndex = '-1000';
@@ -299,11 +299,11 @@ function processVideoPlayer(url: string) {
     return;
   }
 
-  player.videoId = videoId;
+  player.videoId = videoId as string;
   const checkbox = createCheckboxDiv();
   player.append(checkbox);
 
-  updateElementsIfVideoMarkedAsWatched(videoId, checkbox, player, false);
+  updateElementsIfVideoMarkedAsWatched(videoId as string, checkbox, player, false);
 
   // todo: check if listeners not applied twice
   addElementsEventListeners(player, checkbox, false);
@@ -317,8 +317,8 @@ function processThumbnail(thumbnail: Thumbnail) {
   if (thumbnail.videoId) {
     console.log('processing thumbnail: ' + thumbnail.videoId);
     chrome.storage.sync.get(thumbnail.videoId, (result: Holder) => {
-      const checkbox: HTMLElement = thumbnail.querySelector('.youtube-watched-checkbox');
-      if (result[thumbnail.videoId]) {
+      const checkbox: HTMLElement = thumbnail.querySelector('.youtube-watched-checkbox') as HTMLElement;
+      if (result[thumbnail.videoId as string]) {
         checkbox.style.zIndex = '1000';
         thumbnail.classList.add('youtube-watched-thumbnail');
       } else {
@@ -348,7 +348,7 @@ function processThumbnail(thumbnail: Thumbnail) {
  * @param {Thumbnail} thumbnail
  * @return {string} videoId
  */
-export function getVideoId(thumbnail: Thumbnail): string {
+export function getVideoId(thumbnail: Thumbnail): string | null {
   const href = thumbnail.getAttribute('href');
   if (!href) return null;
 
@@ -397,7 +397,7 @@ function updateElementsIfVideoMarkedAsWatched(videoId: string, checkbox: HTMLDiv
 function addElementsEventListeners(thumbnail: Thumbnail, checkbox: HTMLDivElement, changeThumbnailOpacity: boolean) {
   thumbnail.addEventListener('mouseenter', mouseEnterHandler);
   thumbnail.addEventListener('mouseleave', mouseLeaveHanlder);
-  checkbox.addEventListener('click', () => clickHandler(event, changeThumbnailOpacity));
+  checkbox.addEventListener('click', () => clickHandler(event as Event, changeThumbnailOpacity));
 }
 
 /**
@@ -406,10 +406,10 @@ function addElementsEventListeners(thumbnail: Thumbnail, checkbox: HTMLDivElemen
  */
 function mouseEnterHandler(event: Event) {
   const currentThumbnail = event.currentTarget as Thumbnail;
-  const checkbox: HTMLElement = currentThumbnail.querySelector('.youtube-watched-checkbox');
+  const checkbox: HTMLElement = currentThumbnail.querySelector('.youtube-watched-checkbox') as HTMLElement;
 
-  chrome.storage.sync.get(currentThumbnail.videoId, (result: Holder) => {
-    if (!result[currentThumbnail.videoId]) {
+  chrome.storage.sync.get(currentThumbnail.videoId as string, (result: Holder) => {
+    if (!result[currentThumbnail.videoId as string]) {
       checkbox.style.zIndex = '1000';
     }
   });
@@ -421,10 +421,10 @@ function mouseEnterHandler(event: Event) {
  */
 function mouseLeaveHanlder(event: Event) {
   const currentThumbnail = event.currentTarget as Thumbnail;
-  const checkbox: HTMLElement = currentThumbnail.querySelector('.youtube-watched-checkbox');
+  const checkbox: HTMLElement = currentThumbnail.querySelector('.youtube-watched-checkbox') as HTMLElement;
 
-  chrome.storage.sync.get(currentThumbnail.videoId, (result: Holder) => {
-    if (!result[currentThumbnail.videoId]) {
+  chrome.storage.sync.get(currentThumbnail.videoId as string, (result: Holder) => {
+    if (!result[currentThumbnail.videoId as string]) {
       checkbox.style.zIndex = '-1000';
     }
   });
@@ -441,12 +441,12 @@ function clickHandler(event: Event, changeThumbnailOpacity: boolean) {
   event.stopImmediatePropagation();
 
   const currentCheckbox = event.currentTarget as HTMLElement;
-  const thumbnail: Thumbnail = currentCheckbox.parentElement;
+  const thumbnail: Thumbnail = currentCheckbox.parentElement as Thumbnail;
   const videoId = thumbnail.videoId;
 
-  chrome.storage.sync.get(videoId, (result: Holder) => {
-    if (result[videoId]) {
-      chrome.storage.sync.remove(videoId, () => {
+  chrome.storage.sync.get(videoId as string, (result: Holder) => {
+    if (result[videoId as string]) {
+      chrome.storage.sync.remove(videoId as string, () => {
         console.log('Delete ' + JSON.stringify(videoId));
       });
       currentCheckbox.style.zIndex = '-1000';
@@ -455,7 +455,7 @@ function clickHandler(event: Event, changeThumbnailOpacity: boolean) {
       }
     } else {
       const obj: Holder = {};
-      obj[videoId] = 1;
+      obj[videoId as string] = 1;
       chrome.storage.sync.set(obj, () => {
         console.log('Save ' + JSON.stringify(obj));
       });
@@ -479,7 +479,7 @@ function newElementsCallback(mutations: MutationRecord[], element: string) {
 
       if (node.matches(element)) {
         console.log('observer processing thumbnail...');
-        const thumbnail: Thumbnail = node.querySelector(THUMBNAIL_PATH);
+        const thumbnail: Thumbnail = node.querySelector(THUMBNAIL_PATH) as Thumbnail;
         if (thumbnail) {
           processThumbnail(thumbnail);
         }

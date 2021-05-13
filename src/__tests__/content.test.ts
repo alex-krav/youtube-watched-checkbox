@@ -12,7 +12,7 @@ import {
   createCheckboxDiv,
   getVideoId,
   setElementSelectors,
-} from '../scripts/content';
+} from '../content';
 
 let elementsPath: string[] = [];
 let containersPath: string[] = [];

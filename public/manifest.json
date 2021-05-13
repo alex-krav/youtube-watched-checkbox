@@ -32,7 +32,7 @@
   [
     {
       "matches":["https://*.youtube.com/*"],
-      "js":["scripts/content.js"],
+      "js":["js/content.js"],
       "css": ["styles/styles.css"],
       "run_at": "document_end"
     }

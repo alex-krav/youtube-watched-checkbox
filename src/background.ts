@@ -1,7 +1,7 @@
 'use strict';
 
 // page updated (user clicked on video etc)
-import {Message} from './scripts/content';
+import {Message} from './content';
 
 let prevUrl = '';
 
@@ -12,7 +12,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   if (currentUrl && prevUrl && currentUrl !== prevUrl && !sameVideoPage(prevUrl, currentUrl)) {
     // window.onload = (event) => {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      ensureSendMessage(tabs[0].id, {url: currentUrl}, null);
+      ensureSendMessage(tabs[0].id as number, {url: currentUrl}, function() {/* do nothing */});
     });
     // };
   }
