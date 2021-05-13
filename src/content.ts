@@ -22,9 +22,9 @@ chrome.runtime.onMessage.addListener(function(request: Message, sender, sendResp
   if (request.ping) {
     console.log('received ping');
     sendResponse({pong: true});
-    return;
   }
   console.log('path updated: ' + request.url);
+  sendResponse({pong: true});
   processUrl(request.url);
 });
 
@@ -36,6 +36,8 @@ processUrl(window.location + '');
  * @param {string} url
  */
 function processUrl(url: string) {
+  if (!url) return;
+
   const path = url.replace(YOUTUBE_HOST_REGEX, '');
   console.log('PATH: ' + path);
 
