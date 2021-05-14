@@ -62,92 +62,83 @@ function processUrl(url: string) {
  */
 export function setElementSelectors(path: string, elementsPath: string[], containersPath: string[],
     containerId: number[], containerItem: string[]): void {
-  if (path.match(/^\/$/)) {
-    console.debug('MATCHED HOME');
-    elementsPath.push('ytd-rich-grid-renderer ytd-rich-item-renderer ytd-rich-grid-media');
-    containersPath.push('ytd-rich-grid-renderer #contents');
-    containerId.push(0);
-    containerItem.push('ytd-rich-item-renderer');
-  } else if (path.match(/^\/results/)) {
-    // fixme: 'people also watch' AND after it don't work
-    console.debug('MATCHED HOME SEARCH');
-    elementsPath.push('ytd-section-list-renderer ytd-item-section-renderer ytd-video-renderer',
-        'ytd-vertical-list-renderer ytd-video-renderer');
-    containersPath.push('ytd-section-list-renderer > #contents', 'ytd-vertical-list-renderer > #items');
-    containerId.push(2, 0);
-    containerItem.push('ytd-item-section-renderer', 'ytd-video-renderer');
-  } else if (path.match(/^\/user\/[^/]*|^\/c\/[^/]*\/featured$/)) {
-    // fixme: only first 3 playlists work
-    console.debug('MATCHED USER HOME'); // todo: observer for loading of new playlists
-    elementsPath.push('yt-horizontal-list-renderer ytd-grid-video-renderer');
-    containersPath.push('yt-horizontal-list-renderer #items');
-    containerId.push(-1);
-    containerItem.push('ytd-grid-video-renderer');
-  } else if (path.match(/^\/c\/[^/]*\/[^f]/)) {
-    if (path.match(/^\/c\/[^/]*\/videos$/)) {
+  switch (true) {
+    case /^\/user\/[^/]*$/.test(path):
+    case /^\/channel\/[^/]*$/.test(path):
+    case /^\/c\/[^/]*$/.test(path):
+    case /^\/user\/[^/]*\/featured$/.test(path):
+    case /^\/channel\/[^/]*\/featured$/.test(path):
+    case /^\/c\/[^/]*\/featured$/.test(path):
+      // fixme: only first 3 playlists work
+      // todo: observer for loading of new playlists
+      console.debug('MATCHED USER HOME');
+      elementsPath.push('yt-horizontal-list-renderer ytd-grid-video-renderer');
+      containersPath.push('yt-horizontal-list-renderer #items');
+      containerId.push(-1);
+      containerItem.push('ytd-grid-video-renderer');
+      break;
+
+    case /^\/user\/[^/]*\/videos$/.test(path):
+    case /^\/channel\/[^/]*\/videos$/.test(path):
+    case /^\/c\/[^/]*\/videos$/.test(path):
       console.debug('MATCHED USER VIDEOS');
       elementsPath.push('ytd-grid-renderer ytd-grid-video-renderer');
       containersPath.push('ytd-grid-renderer #items');
       containerId.push(0);
       containerItem.push('ytd-grid-video-renderer');
-    } else if (path.match(/^\/c\/[^/]*\/search/)) {
-      // fixme first: only first 3 videos work
+      break;
+
+    case /^\/user\/[^/]*\/search/.test(path):
+    case /^\/channel\/[^/]*\/search/.test(path):
+    case /^\/c\/[^/]*\/search/.test(path):
+      // fixme: on first load - processed first 3 videos
+      // fixme: didn't work on webNavigation.HistoryUpdated
       // fixme navigation: new videos after scroll don't work
       console.debug('MATCHED USER SEARCH');
       elementsPath.push('ytd-section-list-renderer ytd-item-section-renderer ytd-video-renderer');
       containersPath.push('ytd-section-list-renderer > #contents');
       containerId.push(1);
       containerItem.push('ytd-item-section-renderer');
-    }
-  } else if (path.match(/^\/channel\//)) {
-    // channel
-    if (path.match(/^\/channel\/[^/]*$|^\/channel\/[^/]*\/featured/)) {
-      console.debug('MATCHED CHANNEL HOME'); // todo: observer for loading of new playlists
-      elementsPath.push('yt-horizontal-list-renderer ytd-grid-video-renderer');
-      containersPath.push('yt-horizontal-list-renderer #items');
-      containerId.push(-1);
-      containerItem.push('ytd-grid-video-renderer');
-    } else if (path.match(/^\/channel\/[^/]*\/videos$/)) {
-      console.debug('MATCHED CHANNEL VIDEOS');
-      elementsPath.push('ytd-grid-renderer ytd-grid-video-renderer');
-      containersPath.push('ytd-grid-renderer #items');
+      break;
+
+    case /^\/$/.test(path):
+      console.debug('MATCHED HOME');
+      elementsPath.push('ytd-rich-grid-renderer ytd-rich-item-renderer ytd-rich-grid-media');
+      containersPath.push('ytd-rich-grid-renderer #contents');
       containerId.push(0);
-      containerItem.push('ytd-grid-video-renderer');
-    } else if (path.match(/^\/channel\/[^/]*\/search/)) {
-      // fixme: on first load - processed first 3 videos
-      // fixme: didn't work on webNavigation.HistoryUpdated
-      console.debug('MATCHED CHANNEL SEARCH');
-      elementsPath.push('ytd-section-list-renderer ytd-item-section-renderer ytd-video-renderer');
-      containersPath.push('ytd-section-list-renderer > #contents');
-      containerId.push(1);
-      containerItem.push('ytd-item-section-renderer');
-    }
-  } else if (path.match(/^\/watch/)) {
-    // watch
-    if (path.match(/^\/watch\?.*list=/)) {
-      console.debug('MATCHED VIDEO WITH PLAYLIST AND RELATED');
+      containerItem.push('ytd-rich-item-renderer');
+      break;
+
+    case /^\/results/.test(path):
+      // fixme: 'people also watch' AND after it don't work
+      console.debug('MATCHED HOME SEARCH');
+      elementsPath.push('ytd-section-list-renderer ytd-item-section-renderer ytd-video-renderer',
+          'ytd-vertical-list-renderer ytd-video-renderer');
+      containersPath.push('ytd-section-list-renderer > #contents', 'ytd-vertical-list-renderer > #items');
+      containerId.push(2, 0);
+      containerItem.push('ytd-item-section-renderer', 'ytd-video-renderer');
+      break;
+
+    case /^\/watch/.test(path):
+      console.debug('MATCHED VIDEO');
       elementsPath.push('ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer',
           'ytd-watch-next-secondary-results-renderer ytd-item-section-renderer ytd-compact-video-renderer');
       containersPath.push('ytd-playlist-panel-renderer #items',
           'ytd-watch-next-secondary-results-renderer ytd-item-section-renderer #contents');
       containerId.push(0, 0);
       containerItem.push('ytd-playlist-panel-video-renderer', 'ytd-compact-video-renderer');
-    } else {
-      console.debug('MATCHED VIDEO WITH RELATED');
-      elementsPath.push('ytd-watch-next-secondary-results-renderer ytd-item-section-renderer ytd-compact-video-renderer');
-      containersPath.push('ytd-watch-next-secondary-results-renderer ytd-item-section-renderer #contents');
+      break;
+
+    case /^\/playlis/.test(path):
+      console.debug('MATCHED PLAYLIST');
+      elementsPath.push('ytd-playlist-video-list-renderer ytd-playlist-video-renderer');
+      containersPath.push('ytd-playlist-video-list-renderer #contents');
       containerId.push(0);
-      containerItem.push('ytd-compact-video-renderer');
-    }
-  } else if (path.match(/^\/playlist/)) {
-    console.debug('MATCHED PLAYLIST');
-    elementsPath.push('ytd-playlist-video-list-renderer ytd-playlist-video-renderer');
-    containersPath.push('ytd-playlist-video-list-renderer #contents');
-    containerId.push(0);
-    containerItem.push('ytd-playlist-video-renderer');
-  } else if (path.match(/^\/feed/)) {
-    // feed
-    if (path.match(/^\/feed\/subscriptions$|^\/feed\/library$/)) {
+      containerItem.push('ytd-playlist-video-renderer');
+      break;
+
+    case /^\/feed\/subscriptions$/.test(path):
+    case /^\/feed\/library$/.test(path):
       // fixme: /feed/subscriptions?flow=2 - all don't work
       // fixme: /feed/subscriptions - videos after scroll don't work
       // fixme: /feed/library - 'show more' don't work
@@ -156,22 +147,28 @@ export function setElementSelectors(path: string, elementsPath: string[], contai
       containersPath.push('ytd-grid-renderer #items');
       containerId.push(-1);
       containerItem.push('ytd-grid-video-renderer');
-    } else if (path.match(/^\/feed\/explore$/)) {
+      break;
+
+    case /^\/feed\/explore$/.test(path):
       console.debug('MATCHED FEED EXPLORE');
       elementsPath.push('ytd-expanded-shelf-contents-renderer ytd-video-renderer');
       containersPath.push('ytd-expanded-shelf-contents-renderer #grid-container');
       containerId.push(0);
       containerItem.push('ytd-video-renderer');
-    } else if (path.match(/^\/feed\/history$/)) {
+      break;
+
+    case /^\/feed\/history$/.test(path):
       // fixme: videos after scroll don't work
       console.debug('MATCHED FEED HISTORY');
       elementsPath.push('ytd-section-list-renderer ytd-item-section-renderer ytd-video-renderer');
       containersPath.push('ytd-section-list-renderer > #contents');
       containerId.push(0);
       containerItem.push('ytd-item-section-renderer');
-    }
-  } else {
-    console.debug('DIDN\'T MATCH');
+      break;
+
+    default:
+      console.debug('>>> DIDN\'T MATCH');
+      break;
   }
 }
 

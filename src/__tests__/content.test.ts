@@ -114,10 +114,12 @@ describe('setElementSelectors', function() {
   it('watch page with related videos', function() {
     setElementSelectors('/watch?v=VIDEO_ID', elementsPath, containersPath, containerId, containerItem);
 
-    assertElementSelectors(['ytd-watch-next-secondary-results-renderer ytd-item-section-renderer ytd-compact-video-renderer'],
-        ['ytd-watch-next-secondary-results-renderer ytd-item-section-renderer #contents'],
-        [0],
-        ['ytd-compact-video-renderer']);
+    assertElementSelectors(['ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer',
+      'ytd-watch-next-secondary-results-renderer ytd-item-section-renderer ytd-compact-video-renderer'],
+    ['ytd-playlist-panel-renderer #items',
+      'ytd-watch-next-secondary-results-renderer ytd-item-section-renderer #contents'],
+    [0, 0],
+    ['ytd-playlist-panel-video-renderer', 'ytd-compact-video-renderer']);
   });
 
   it('playlist page', function() {
