@@ -11,7 +11,7 @@
     "128": "images/icon128.png"
   },
   "permissions": [
-    "storage", "activeTab", "scripting", "webNavigation", "tabs"
+    "storage", "activeTab", "webNavigation", "tabs"
   ],
 
   "background": {
