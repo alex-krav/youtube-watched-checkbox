@@ -106,3 +106,7 @@ Load extension on Chrome following:
 ```
 npm run test
 ```
+
+### How-to
+
+[![Extension video](https://img.youtube.com/vi/X0sIQRgduEw/0.jpg)](https://www.youtube.com/watch?v=X0sIQRgduEw)
