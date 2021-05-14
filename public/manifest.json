@@ -17,6 +17,7 @@
   "background": {
     "service_worker": "background.js"
   },
+  "options_page": "templates/background.html",
   "content_scripts":
   [
     {
