@@ -5,7 +5,8 @@
   "scripts": {
     "test": "mocha -r ts-node/register src/__tests__/*.test.ts",
     "watch": "webpack --config webpack/webpack.dev.ts --watch",
-    "build": "webpack --config webpack/webpack.prod.ts"
+    "build": "webpack --config webpack/webpack.prod.ts",
+    "pack": "npx ts-node webpack/pack.ts"
   },
   "husky": {
     "hooks": {
@@ -29,6 +30,7 @@
     "@typescript-eslint/parser": "^4.23.0",
     "chai": "^4.3.4",
     "copy-webpack-plugin": "^8.1.1",
+    "crx": "^3.2.1",
     "eslint": "^7.26.0",
     "eslint-config-google": "^0.14.0",
     "glob": "^7.1.7",

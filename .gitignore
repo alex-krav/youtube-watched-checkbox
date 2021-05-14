@@ -3,3 +3,4 @@
 _ignored/
 node_modules/
 dist/
+*.pem
