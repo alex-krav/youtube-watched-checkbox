@@ -4,8 +4,8 @@
   "description": "Manually select YouTube watched videos.",
   "scripts": {
     "test": "mocha -r ts-node/register src/__tests__/*.test.ts",
-    "watch": "webpack --config webpack/webpack.dev.js --watch",
-    "build": "webpack --config webpack/webpack.prod.js"
+    "watch": "webpack --config webpack/webpack.dev.ts --watch",
+    "build": "webpack --config webpack/webpack.prod.ts"
   },
   "husky": {
     "hooks": {
@@ -21,8 +21,10 @@
   "devDependencies": {
     "@types/chai": "^4.2.18",
     "@types/chrome": "^0.0.137",
+    "@types/copy-webpack-plugin": "^8.0.0",
     "@types/mocha": "^8.2.2",
     "@types/node": "^15.0.2",
+    "@types/webpack": "^5.28.0",
     "@typescript-eslint/eslint-plugin": "^4.21.0",
     "@typescript-eslint/parser": "^4.23.0",
     "chai": "^4.3.4",

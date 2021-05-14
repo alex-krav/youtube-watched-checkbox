@@ -1,8 +1,9 @@
 'use strict';
 
-const CopyPlugin = require('copy-webpack-plugin');
+import webpack from 'webpack';
+import CopyPlugin = require('copy-webpack-plugin');
 
-module.exports = {
+const config: webpack.Configuration = {
   entry: {
     content: {import: '/src/content.ts', filename: '../dist/js/[name].js'},
     background: {import: '/src/background.ts', filename: '../dist/[name].js'},
@@ -26,3 +27,5 @@ module.exports = {
     }),
   ],
 };
+
+export default config;

@@ -8,8 +8,6 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "sourceMap": false,
-    "rootDir": "src",
-    "outDir": "dist",
     "typeRoots": [ "node_modules/@types" ]
   },
   "include": [
