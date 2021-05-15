@@ -1,0 +1,30 @@
+{
+  "name": "YouTube watched checkbox",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "description": "Manually select YouTube watched videos.",
+
+  "icons": {
+    "16": "images/icon16.png",
+    "32": "images/icon32.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "permissions": [
+    "storage", "activeTab", "webNavigation", "tabs", "unlimitedStorage"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "templates/background.html",
+  "content_scripts":
+  [
+    {
+      "matches":["https://www.youtube.com/*"],
+      "js":["js/content.js"],
+      "css": ["styles/styles.css"],
+      "run_at": "document_end"
+    }
+  ]
+}

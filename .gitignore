@@ -1,2 +1,7 @@
 *.iml
 .idea/
+_ignored/
+node_modules/
+dist/
+*.pem
+*.crx

@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "module": "commonjs",
+    "target": "es6",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "sourceMap": false,
+    "typeRoots": [ "node_modules/@types" ]
+  },
+  "include": [
+    "**/*.ts"
+  ]
+}
