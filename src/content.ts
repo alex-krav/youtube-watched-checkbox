@@ -1,5 +1,3 @@
-'use strict';
-
 export interface Message {
   url: string;
   ping?: boolean;
@@ -14,7 +12,7 @@ interface Holder {
   [key: string]: number
 }
 
-console.debug = function() {};
+// console.debug = function() {};
 
 const YOUTUBE_HOST_REGEX = /https:\/\/www\.youtube\.com/;
 const THUMBNAIL_PATH = 'ytd-thumbnail a[id=\'thumbnail\']';
@@ -224,8 +222,8 @@ function setListeners(url: string, path: string, elementsPath: string[], contain
  * @param {array} containerItems
  */
 function processElements(elements: string[], containers: string[], containerIds: number[], containerItems: string[]) {
-  for (let i = 0; i < elements.length; i++) {
-    const elementPath = elements[i] + ' ' + THUMBNAIL_PATH;
+  elements.forEach((value, i) => {
+    const elementPath = value + ' ' + THUMBNAIL_PATH;
     console.debug('elementPath: ' + elementPath);
     const containerPath = containers[i];
     console.debug('containerPath: ' + containerPath);
@@ -239,7 +237,7 @@ function processElements(elements: string[], containers: string[], containerIds:
 
       setObserverForDynamicallyLoadedElements(i, containerPath, containerIds, containerItems);
     }
-  }
+  });
 }
 
 /**
@@ -287,7 +285,7 @@ function processVideoPlayer(url: string) {
   const videoId = new URL(url).searchParams.get('v');
   console.debug('watch page videoId: ' + videoId);
 
-  if (player.videoId) {
+  /* if (player.videoId) {
     player.videoId = videoId as string; // current video value
     chrome.storage.local.get(videoId, (result: Holder) => {
       const checkbox: HTMLElement = player.querySelector('.youtube-watched-checkbox') as HTMLElement;
@@ -298,7 +296,7 @@ function processVideoPlayer(url: string) {
       }
     });
     return;
-  }
+  }*/
 
   player.videoId = videoId as string;
   const checkbox = createCheckboxDiv();
@@ -315,7 +313,7 @@ function processVideoPlayer(url: string) {
  * @param {Thumbnail} thumbnail
  */
 function processThumbnail(thumbnail: Thumbnail) {
-  if (thumbnail.videoId) {
+  /* if (thumbnail.videoId) {
     console.debug('processing thumbnail: ' + thumbnail.videoId);
     chrome.storage.local.get(thumbnail.videoId, (result: Holder) => {
       const checkbox: HTMLElement = thumbnail.querySelector('.youtube-watched-checkbox') as HTMLElement;
@@ -328,7 +326,7 @@ function processThumbnail(thumbnail: Thumbnail) {
       }
     });
     return; // todo: check for possible source of not processing thumbnails on some pages
-  }
+  }*/
 
   const videoId = getVideoId(thumbnail);
   if (!videoId) return;
