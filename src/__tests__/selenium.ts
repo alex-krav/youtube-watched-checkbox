@@ -1,7 +1,7 @@
 'use strict';
 
-const webdriver = require('selenium-webdriver');
-const chromeDriver = require('selenium-webdriver/chrome');
+import webdriver from 'selenium-webdriver';
+import chromeDriver from 'selenium-webdriver/chrome';
 const By = webdriver.By;
 
 const options = new chromeDriver.Options();

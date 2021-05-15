@@ -18,7 +18,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
     // };
   }
   prevUrl = currentUrl;
-}, {url: [{urlMatches: 'https://www.youtube.com/'}]}); // todo: check if url causing bugs?
+}, {url: [{urlMatches: 'https://www.youtube.com/*'}]}); // todo: check if url causing bugs?
 
 /**
  * Ensure message is sent to content script

@@ -1,7 +1,7 @@
 'use strict';
 
 import webpack from 'webpack';
-import CopyPlugin = require('copy-webpack-plugin');
+import CopyPlugin from 'copy-webpack-plugin';
 
 const config: webpack.Configuration = {
   entry: {

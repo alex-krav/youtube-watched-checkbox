@@ -15,7 +15,7 @@
     }
   },
   "lint-staged": {
-    "**/*.{ts,tsx}": [
+    "**/*.{js,ts,jsx,tsx}": [
       "eslint --fix"
     ]
   },
@@ -23,9 +23,11 @@
     "@types/chai": "^4.2.18",
     "@types/chrome": "^0.0.137",
     "@types/copy-webpack-plugin": "^8.0.0",
+    "@types/jsdom-global": "^3.0.2",
     "@types/mocha": "^8.2.2",
     "@types/node": "^15.0.2",
     "@types/selenium-webdriver": "^4.0.12",
+    "@types/sinon-chrome": "^2.2.10",
     "@types/webpack": "^5.28.0",
     "@typescript-eslint/eslint-plugin": "^4.21.0",
     "@typescript-eslint/parser": "^4.23.0",

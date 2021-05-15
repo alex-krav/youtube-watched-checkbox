@@ -16,9 +16,9 @@ interface Holder {
 
 console.debug = function() {};
 
-const YOUTUBE_HOST_REGEX = /https?:\/\/(www\.)?youtube\.com/;
+const YOUTUBE_HOST_REGEX = /https:\/\/www\.youtube\.com/;
 const THUMBNAIL_PATH = 'ytd-thumbnail a[id=\'thumbnail\']';
-const PAGE_LOAD_TIMEOUT = 5000;
+export const PAGE_LOAD_TIMEOUT = 5000;
 
 chrome.runtime.onMessage.addListener(function(request: Message, sender, sendResponse) {
   if (request.ping) {
